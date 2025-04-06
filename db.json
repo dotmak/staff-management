@@ -1,0 +1,28 @@
+{
+  "businesses": [
+    {
+      "id": 1,
+      "name": "Giglio",
+      "location": "Chaimanta 19-21, Chalandri 152 34",
+      "type": "Bar"
+    }
+  ],
+  "staff": [
+    {
+      "id": 1,
+      "email": "spmakaronas@gmail.com",
+      "firstName": "Spiros",
+      "lastName": "Makaronas",
+      "position": "Owner",
+      "businessId": 1,
+      "phoneNumber": "+1234567890"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "email": "admin@example.com",
+      "password": "123"
+    }
+  ]
+}
