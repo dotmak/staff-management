@@ -11,6 +11,9 @@
     "dev:db": "concurrently \"npm run db\" \"npm run dev\""
   },
   "dependencies": {
+    "ag-grid-community": "^33.2.1",
+    "ag-grid-react": "^33.2.1",
+    "formik": "^2.4.6",
     "next": "15.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

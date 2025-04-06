@@ -1,10 +1,10 @@
 {
   "businesses": [
     {
-      "id": 1,
+      "id": "0c1e",
       "name": "Giglio",
-      "location": "Chaimanta 19-21, Chalandri 152 34",
-      "type": "Bar"
+      "location": "Leof Pentelis 1",
+      "type": "bar"
     }
   ],
   "staff": [

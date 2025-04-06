@@ -52,7 +52,7 @@ export default function LoginPage() {
         />
         <button
           type="submit"
-          className="bg-teal-600 text-white px-4 py-2 rounded w-full"
+          className="bg-blue-600 text-white px-4 py-2 rounded w-full"
         >
           Login
         </button>
