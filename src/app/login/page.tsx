@@ -16,6 +16,11 @@ export default function LoginPage() {
     e.preventDefault();
     const success = await login(email, password);
 
+    if (email == '' || password == '') {
+      setError('Please enter your email and password');
+      return;
+    }
+
     if (success) {
       router.push('/');
     } else {
