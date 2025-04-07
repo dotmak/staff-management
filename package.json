@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db": "json-server --watch db.json --port 3001",
+    "db": "json-server --watch db.json --port 4001",
     "dev:db": "concurrently \"npm run db\" \"npm run dev\""
   },
   "dependencies": {

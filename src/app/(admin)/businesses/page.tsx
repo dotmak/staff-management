@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import axios from 'axios';
 import { AgGridReact } from 'ag-grid-react';
 import { ModuleRegistry } from 'ag-grid-community';
-import { ClientSideRowModelModule, ColDef } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import axios from 'axios';
+import { useEffect, useState, useCallback } from 'react';
+import { ClientSideRowModelModule, ColDef } from 'ag-grid-community';
 import BusinessForm, { Business } from '../../components/AddBusiness';
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
@@ -18,7 +18,9 @@ export default function BusinessesPage() {
 
   const fetchBusinesses = useCallback(async () => {
     try {
-      const res = await axios.get('http://localhost:3001/businesses');
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/businesses`
+      );
       setRowData(res.data);
     } catch (err) {
       console.error('Failed to fetch businesses:', err);
@@ -32,13 +34,13 @@ export default function BusinessesPage() {
   }, [fetchBusinesses]);
 
   const handleDelete = async (id: number) => {
-    await axios.delete(`http://localhost:3001/businesses/${id}`);
+    await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/businesses/${id}`);
     fetchBusinesses();
   };
 
   const handleFormSubmit = async (data: Business) => {
     try {
-      await axios.post('http://localhost:3001/businesses', data);
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/businesses`, data);
       setShowForm(false);
       fetchBusinesses();
     } catch (err) {
@@ -53,6 +55,14 @@ export default function BusinessesPage() {
         onClick={() => handleDelete(params.data.id)}
       >
         Delete
+      </button>
+      <button
+        className="text-blue-600 underline"
+        onClick={() => {
+          window.location.href = `/staff?businessId=${params.data.id}`;
+        }}
+      >
+        View Staff
       </button>
     </div>
   );

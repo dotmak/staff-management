@@ -1,7 +1,7 @@
 {
   "businesses": [
     {
-      "id": "0c1e",
+      "id": "bb7e",
       "name": "Giglio",
       "location": "Leof Pentelis 1",
       "type": "bar"
@@ -9,18 +9,18 @@
   ],
   "staff": [
     {
-      "id": 1,
+      "id": "1",
       "email": "spmakaronas@gmail.com",
       "firstName": "Spiros",
       "lastName": "Makaronas",
       "position": "Owner",
-      "businessId": 1,
+      "businessId": "bb7e",
       "phoneNumber": "+1234567890"
     }
   ],
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "email": "admin@example.com",
       "password": "123"
     }

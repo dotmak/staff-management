@@ -38,7 +38,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    const { data: users } = await axios.get('http://localhost:3001/users');
+    const { data: users } = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/users`
+    );
 
     const found = users.find(
       (u: any) => u.email === email && u.password === password
