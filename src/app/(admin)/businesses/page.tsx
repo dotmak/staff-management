@@ -2,11 +2,12 @@
 
 import axios from 'axios';
 import { AgGridReact } from 'ag-grid-react';
+import { Business } from '../../types/business';
 import { ModuleRegistry } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { useEffect, useState, useCallback } from 'react';
 import { ClientSideRowModelModule, ColDef } from 'ag-grid-community';
-import BusinessForm, { Business } from '../../components/AddBusiness';
+import BusinessForm from '../../components/AddBusiness';
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 

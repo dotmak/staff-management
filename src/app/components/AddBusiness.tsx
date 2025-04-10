@@ -1,13 +1,7 @@
 'use client';
 
+import { Business } from '../types/business';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-
-export type Business = {
-  id?: string;
-  name: string;
-  location: string;
-  type?: 'bar' | 'restaurant' | 'club' | 'hotel' | 'cafe';
-};
 
 type Props = {
   onSubmit: (data: Business) => void;

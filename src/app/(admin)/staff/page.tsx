@@ -1,10 +1,12 @@
 'use client';
 
 import axios from 'axios';
+import { Staff } from '../../types/staff';
 import { useEffect, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { ModuleRegistry } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+import StaffForm from '../../components/AddStaff';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ClientSideRowModelModule, ColDef } from 'ag-grid-community';
 
@@ -13,20 +15,21 @@ type Business = {
   name: string;
 };
 
-type Staff = {
-  id: number;
-  email: string;
-  firstName: string;
-  lastName: string;
-  position: 'kitchen' | 'service' | 'PR';
-  phoneNumber?: string;
-  businessId: number;
-};
+// type Staff = {
+//   id: number;
+//   email: string;
+//   firstName: string;
+//   lastName: string;
+//   position: 'kitchen' | 'service' | 'PR';
+//   phoneNumber?: string;
+//   businessId: number;
+// };
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
 export default function StaffPage() {
   const [staff, setStaff] = useState<Staff[]>([]);
+  const [showForm, setShowForm] = useState(false);
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [selectedBusinessId, setSelectedBusinessId] = useState<string | null>(
     null
@@ -54,10 +57,35 @@ export default function StaffPage() {
     }
   }, [queryBusinessId]);
 
+  const handleSubmit = async (data: Staff) => {
+    try {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/staff`, data);
+      setShowForm(false);
+      setStaff([...staff, data]);
+    } catch (err) {
+      console.error('Error creating staff:', err);
+    }
+  };
+
   const handleSelect = () => {
     if (selectedBusinessId) {
       router.push(`/staff?businessId=${selectedBusinessId}`);
     }
+  };
+
+  const actionCellRenderer = (params: any) => (
+    <div className="flex gap-[24px]">
+      <button
+        className="text-red-500 underline"
+        onClick={() => handleDelete(params.data.id)}
+      >
+        Delete
+      </button>
+    </div>
+  );
+
+  const handleDelete = async (id: number) => {
+    await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/staff/${id}`);
   };
 
   const columnDefs: ColDef<Staff>[] = [
@@ -72,11 +100,29 @@ export default function StaffPage() {
     { headerName: 'Email', field: 'email', sortable: true, filter: true },
     { headerName: 'Position', field: 'position', sortable: true, filter: true },
     { headerName: 'Phone', field: 'phoneNumber', sortable: true, filter: true },
+    {
+      headerName: 'Actions',
+      field: 'actions',
+      cellRenderer: actionCellRenderer,
+      sortable: false,
+      filter: false,
+    },
   ];
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-4">Staff Members</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-semibold mb-4">Staff Members</h1>
+
+        {queryBusinessId && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded mt-4"
+          >
+            Add Staff
+          </button>
+        )}
+      </div>
 
       {!queryBusinessId && (
         <div className="space-y-4 max-w-md">
@@ -121,6 +167,16 @@ export default function StaffPage() {
             </div>
           )}
         </>
+      )}
+
+      {showForm && queryBusinessId && (
+        <div className="fixed inset-0 bg-[#f6f3f4d1] flex justify-center items-center z-50">
+          <StaffForm
+            businessId={queryBusinessId}
+            onSubmit={handleSubmit}
+            onCancel={() => setShowForm(false)}
+          />
+        </div>
       )}
     </div>
   );
