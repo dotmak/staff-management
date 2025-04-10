@@ -7,25 +7,37 @@ type Props = {
   onSubmit: (data: Staff) => void;
   onCancel: () => void;
   businessId: string;
+  initialData?: Staff; // Optional prop for editing
 };
 
 const positions = ['kitchen', 'service', 'PR'];
 
-export default function AddStaff({ onSubmit, onCancel, businessId }: Props) {
-  const defaultValues: Staff = {
+export default function AddStaff({
+  onSubmit,
+  onCancel,
+  businessId,
+  initialData,
+}: Props) {
+  const defaultValues: Staff = initialData ?? {
     email: '',
     firstName: '',
     lastName: '',
     position: 'service',
     phoneNumber: '',
-    businessId,
+    businessId: String(businessId),
   };
 
   return (
     <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-      <h2 className="text-xl font-semibold mb-4">Add a new staff member</h2>
+      <h2 className="text-xl font-semibold mb-4">
+        {initialData ? 'Edit Staff Member' : 'Add a new Staff Member'}
+      </h2>
 
-      <Formik initialValues={defaultValues} onSubmit={onSubmit}>
+      <Formik
+        initialValues={defaultValues}
+        onSubmit={onSubmit}
+        enableReinitialize
+      >
         <Form className="space-y-4">
           <div>
             <label className="block font-medium">First Name</label>
@@ -106,7 +118,7 @@ export default function AddStaff({ onSubmit, onCancel, businessId }: Props) {
               type="submit"
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
-              Create
+              {initialData ? 'Save Changes' : 'Create'}
             </button>
           </div>
         </Form>
