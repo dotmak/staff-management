@@ -9,13 +9,13 @@
   ],
   "staff": [
     {
-      "id": "1",
+      "id": "8b2c",
       "email": "spmakaronas@gmail.com",
-      "firstName": "Spiros",
+      "firstName": "Spyridon",
       "lastName": "Makaronas",
-      "position": "Owner",
-      "businessId": "bb7e",
-      "phoneNumber": "+1234567890"
+      "position": "PR",
+      "phoneNumber": "123123",
+      "businessId": "bb7e"
     }
   ],
   "users": [
