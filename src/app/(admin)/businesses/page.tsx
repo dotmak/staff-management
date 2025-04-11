@@ -5,7 +5,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { Business } from '../../types/business';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import BusinessForm from '@/app/components/BusinessForm';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   ModuleRegistry,
   ValidationModule,
@@ -39,12 +39,13 @@ export default function BusinessesPage() {
   }, [fetchBusinesses]);
 
   const handleDelete = async (id: number) => {
-    await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/businesses/${id}`);
-
-    // Use setTimeout to update grid after current render cycle
-    setTimeout(() => {
-      setRowData((prev) => prev.filter((b) => String(b.id) !== String(id)));
-    }, 0);
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/businesses/${id}`);
+      //Not optimal, but it works
+      fetchBusinesses();
+    } catch (err) {
+      console.error('Failed to delete business:', err);
+    }
   };
 
   const handleFormSubmit = async (data: Business) => {
@@ -130,6 +131,7 @@ export default function BusinessesPage() {
             rowData={rowData}
             columnDefs={columnDefs}
             rowModelType="clientSide"
+            getRowId={(params) => String(params.data.id)} // Important for row identification
           />
         </div>
       )}

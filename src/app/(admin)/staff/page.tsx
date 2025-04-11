@@ -96,8 +96,18 @@ export default function StaffPage() {
   );
 
   const handleDelete = async (id: number) => {
-    await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/staff/${id}`);
-    setStaff((prev) => prev.filter((s) => s.id !== id));
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/staff/${id}`);
+
+      if (queryBusinessId) {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/staff?businessId=${queryBusinessId}`
+        );
+        setStaff(res.data);
+      }
+    } catch (err) {
+      console.error('Failed to delete staff member:', err);
+    }
   };
 
   const columnDefs: ColDef<Staff>[] = [
@@ -173,6 +183,7 @@ export default function StaffPage() {
                 rowData={staff}
                 columnDefs={columnDefs}
                 rowModelType="clientSide"
+                getRowId={(params) => String(params.data.id)}
               />
             </div>
           )}
