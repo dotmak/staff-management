@@ -1,11 +1,13 @@
 'use client';
 
 import axios from 'axios';
-import { useState, useEffect, useCallback } from 'react';
+import { Staff } from '../../types/staff';
+import { useEffect, useState } from 'react';
+import { Business } from '@/app/types/business';
 import { AgGridReact } from 'ag-grid-react';
 import { ModuleRegistry } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import AddStaff, { Staff } from '../../components/AddStaff';
+import StaffForm from '../../components/AddStaff';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ClientSideRowModelModule, ColDef } from 'ag-grid-community';
 
@@ -14,8 +16,8 @@ ModuleRegistry.registerModules([ClientSideRowModelModule]);
 export default function StaffPage() {
   const [staff, setStaff] = useState<Staff[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingStaff, setEditingStaff] = useState<Staff | null>(null); // New state for editing
-  const [businesses, setBusinesses] = useState<any[]>([]);
+  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
   const [selectedBusinessId, setSelectedBusinessId] = useState<string | null>(
     null
   );
@@ -61,24 +63,16 @@ export default function StaffPage() {
       }
 
       setShowForm(false);
-      setEditingStaff(null); // Reset editing staff after submit
+      setEditingStaff(null); // Reset after submit
     } catch (err) {
       console.error('Error saving staff:', err);
     }
   };
 
-  const handleDelete = async (id: number) => {
-    try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/staff/${id}`);
-      setStaff((prev) => prev.filter((s) => s.id !== id));
-    } catch (err) {
-      console.error('Failed to delete staff member:', err);
+  const handleSelect = () => {
+    if (selectedBusinessId) {
+      router.push(`/staff?businessId=${selectedBusinessId}`);
     }
-  };
-
-  const handleEdit = (staffMember: Staff) => {
-    setEditingStaff(staffMember); // Set staff member to edit
-    setShowForm(true);
   };
 
   const actionCellRenderer = (params: any) => (
@@ -91,12 +85,20 @@ export default function StaffPage() {
       </button>
       <button
         className="text-blue-600 underline"
-        onClick={() => handleEdit(params.data)} // Trigger edit on click
+        onClick={() => {
+          setEditingStaff(params.data);
+          setShowForm(true);
+        }}
       >
         Edit
       </button>
     </div>
   );
+
+  const handleDelete = async (id: number) => {
+    await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/staff/${id}`);
+    setStaff((prev) => prev.filter((s) => s.id !== id));
+  };
 
   const columnDefs: ColDef<Staff>[] = [
     {
@@ -121,13 +123,13 @@ export default function StaffPage() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold">Staff Members</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-semibold mb-4">Staff Members</h1>
 
         {queryBusinessId && (
           <button
             onClick={() => setShowForm(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded"
+            className="bg-blue-600 text-white px-4 py-2 rounded mt-4"
           >
             Add Staff
           </button>
@@ -149,29 +151,49 @@ export default function StaffPage() {
               </option>
             ))}
           </select>
+          <button
+            onClick={handleSelect}
+            disabled={!selectedBusinessId}
+            className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"
+          >
+            View Staff
+          </button>
         </div>
       )}
 
-      {showForm && (
+      {queryBusinessId && (
+        <>
+          {staff.length === 0 ? (
+            <p className="mt-6">No staff members found for this business.</p>
+          ) : (
+            <div
+              className="ag-theme-alpine mt-6"
+              style={{ height: 500, width: '100%' }}
+            >
+              <AgGridReact
+                rowData={staff}
+                columnDefs={columnDefs}
+                rowModelType="clientSide"
+                pagination={true}
+              />
+            </div>
+          )}
+        </>
+      )}
+
+      {showForm && queryBusinessId && (
         <div className="fixed inset-0 bg-[#f6f3f4d1] flex justify-center items-center z-50">
-          <AddStaff
+          <StaffForm
+            businessId={queryBusinessId}
             onSubmit={handleSubmit}
-            onCancel={() => setShowForm(false)}
-            businessId={queryBusinessId ?? selectedBusinessId ?? ''}
+            onCancel={() => {
+              setShowForm(false);
+              setEditingStaff(null);
+            }}
             initialData={editingStaff ?? undefined}
           />
         </div>
       )}
-
-      <div className="ag-theme-alpine" style={{ height: 400 }}>
-        <AgGridReact
-          columnDefs={columnDefs}
-          rowData={staff}
-          pagination={true}
-          paginationPageSize={10}
-          domLayout="autoHeight"
-        />
-      </div>
     </div>
   );
 }

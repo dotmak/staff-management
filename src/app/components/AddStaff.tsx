@@ -7,7 +7,7 @@ type Props = {
   onSubmit: (data: Staff) => void;
   onCancel: () => void;
   businessId: string;
-  initialData?: Staff; // Optional prop for editing
+  initialData?: Staff;
 };
 
 const positions = ['kitchen', 'service', 'PR'];
