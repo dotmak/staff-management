@@ -1,5 +1,6 @@
 'use client';
 
+import * as Yup from 'yup';
 import { Staff } from '../types/staff';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 
@@ -10,6 +11,14 @@ type Props = {
   initialData?: Staff;
 };
 
+const validationSchema = Yup.object({
+  firstName: Yup.string().required('First name is required'),
+  lastName: Yup.string().required('Last name is required'),
+  email: Yup.string().email('Invalid email').required('Email is required'),
+  phoneNumber: Yup.string()
+    .matches(/^\+?[0-9\s\-]*$/, 'Invalid phone number')
+    .optional(),
+});
 const positions = ['kitchen', 'service', 'PR'];
 
 export default function AddStaff({
@@ -37,6 +46,7 @@ export default function AddStaff({
         initialValues={defaultValues}
         onSubmit={onSubmit}
         enableReinitialize
+        validationSchema={validationSchema}
       >
         <Form className="space-y-4">
           <div>

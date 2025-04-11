@@ -1,5 +1,6 @@
 'use client';
 
+import * as Yup from 'yup';
 import { Business } from '../types/business';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 
@@ -8,6 +9,14 @@ type Props = {
   onCancel: () => void;
   initialData?: Business;
 };
+
+const validationSchema = Yup.object({
+  name: Yup.string().required('Name is required'),
+  location: Yup.string().required('Location is required'),
+  type: Yup.string()
+    .oneOf(['bar', 'restaurant', 'club', 'hotel', 'cafe'], 'Invalid type')
+    .required('Type is required'),
+});
 
 const businessTypes = ['bar', 'restaurant', 'club', 'hotel', 'cafe'];
 
@@ -31,6 +40,7 @@ export default function BusinessForm({
       <Formik
         initialValues={initialData ?? defaultValues}
         onSubmit={(values) => onSubmit(values)}
+        validationSchema={validationSchema}
       >
         <Form className="space-y-4">
           <div>
