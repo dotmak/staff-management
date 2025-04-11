@@ -5,9 +5,9 @@ import { AgGridReact } from 'ag-grid-react';
 import { Business } from '../../types/business';
 import { ModuleRegistry } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+import BusinessForm from '../../components/BusinessForm';
 import { useEffect, useState, useCallback } from 'react';
 import { ClientSideRowModelModule, ColDef } from 'ag-grid-community';
-import BusinessForm from '../../components/AddBusiness';
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
