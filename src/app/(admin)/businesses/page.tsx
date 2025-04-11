@@ -3,19 +3,23 @@
 import axios from 'axios';
 import { AgGridReact } from 'ag-grid-react';
 import { Business } from '../../types/business';
-import { ModuleRegistry } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import BusinessForm from '../../components/BusinessForm';
 import { useEffect, useState, useCallback } from 'react';
-import { ClientSideRowModelModule, ColDef } from 'ag-grid-community';
+import {
+  ModuleRegistry,
+  ValidationModule,
+  ClientSideRowModelModule,
+  ColDef,
+} from 'ag-grid-community';
 
-ModuleRegistry.registerModules([ClientSideRowModelModule]);
+ModuleRegistry.registerModules([ClientSideRowModelModule, ValidationModule]);
 
 export default function BusinessesPage() {
-  const [rowData, setRowData] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [showForm, setShowForm] = useState(false);
+  const [rowData, setRowData] = useState<Business[]>([]);
+  const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
 
   const fetchBusinesses = useCallback(async () => {
     try {
@@ -36,26 +40,42 @@ export default function BusinessesPage() {
 
   const handleDelete = async (id: number) => {
     await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/businesses/${id}`);
-    fetchBusinesses();
+
+    // Use setTimeout to update grid after current render cycle
+    setTimeout(() => {
+      setRowData((prev) => prev.filter((b) => String(b.id) !== String(id)));
+    }, 0);
   };
 
   const handleFormSubmit = async (data: Business) => {
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/businesses`, data);
+      if (editingBusiness) {
+        await axios.put(
+          `${process.env.NEXT_PUBLIC_API_URL}/businesses/${editingBusiness.id}`,
+          data
+        );
+      } else {
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/businesses`, data);
+      }
+
       setShowForm(false);
+      setEditingBusiness(null);
       fetchBusinesses();
     } catch (err) {
-      console.error('Error creating business:', err);
+      console.error('Error submitting business:', err);
     }
   };
 
   const actionCellRenderer = (params: any) => (
     <div className="flex gap-[24px]">
       <button
-        className="text-red-500 underline"
-        onClick={() => handleDelete(params.data.id)}
+        className="text-blue-600 underline"
+        onClick={() => {
+          setEditingBusiness(params.data);
+          setShowForm(true);
+        }}
       >
-        Delete
+        Edit
       </button>
       <button
         className="text-blue-600 underline"
@@ -65,25 +85,28 @@ export default function BusinessesPage() {
       >
         View Staff
       </button>
+      <button
+        className="text-red-500 underline"
+        onClick={() => handleDelete(params.data.id)}
+      >
+        Delete
+      </button>
     </div>
   );
 
   const columnDefs: ColDef<Business>[] = [
-    { headerName: 'ID', field: 'id', sortable: true, filter: true },
-    { headerName: 'Name', field: 'name', sortable: true, filter: true },
+    { headerName: 'ID', field: 'id', sortable: true },
+    { headerName: 'Name', field: 'name', sortable: true },
     {
       headerName: 'Location',
       field: 'location',
       sortable: true,
-      filter: true,
     },
-    { headerName: 'Type', field: 'type', sortable: true, filter: true },
+    { headerName: 'Type', field: 'type', sortable: true },
     {
       headerName: 'Actions',
-      field: 'actions',
       cellRenderer: actionCellRenderer,
       sortable: false,
-      filter: false,
     },
   ];
 
@@ -107,7 +130,6 @@ export default function BusinessesPage() {
             rowData={rowData}
             columnDefs={columnDefs}
             rowModelType="clientSide"
-            pagination={true}
           />
         </div>
       )}
@@ -117,6 +139,7 @@ export default function BusinessesPage() {
           <BusinessForm
             onSubmit={handleFormSubmit}
             onCancel={() => setShowForm(false)}
+            initialData={editingBusiness ?? undefined}
           />
         </div>
       )}

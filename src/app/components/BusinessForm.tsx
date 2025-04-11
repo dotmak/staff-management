@@ -11,7 +11,11 @@ type Props = {
 
 const businessTypes = ['bar', 'restaurant', 'club', 'hotel', 'cafe'];
 
-export default function BusinessForm({ onSubmit, onCancel }: Props) {
+export default function BusinessForm({
+  onSubmit,
+  onCancel,
+  initialData,
+}: Props) {
   const defaultValues: Business = {
     name: '',
     location: '',
@@ -20,10 +24,12 @@ export default function BusinessForm({ onSubmit, onCancel }: Props) {
 
   return (
     <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-      <h2 className="text-xl font-semibold mb-4">Add a new business</h2>
+      <h2 className="text-xl font-semibold mb-4">
+        {initialData ? 'Edit Business' : 'Add a new business'}
+      </h2>
 
       <Formik
-        initialValues={defaultValues}
+        initialValues={initialData ?? defaultValues}
         onSubmit={(values) => onSubmit(values)}
       >
         <Form className="space-y-4">
@@ -82,7 +88,7 @@ export default function BusinessForm({ onSubmit, onCancel }: Props) {
               type="submit"
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
-              Create
+              {initialData ? 'Update' : 'Create'}
             </button>
           </div>
         </Form>
