@@ -7,7 +7,7 @@ import { Business } from '@/app/types/business';
 import { AgGridReact } from 'ag-grid-react';
 import { ModuleRegistry } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import StaffForm from '../../components/AddStaff';
+import StaffForm from '@/app/components/StaffForm';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ClientSideRowModelModule, ColDef } from 'ag-grid-community';
 
@@ -78,12 +78,6 @@ export default function StaffPage() {
   const actionCellRenderer = (params: any) => (
     <div className="flex gap-[24px]">
       <button
-        className="text-red-500 underline"
-        onClick={() => handleDelete(params.data.id)}
-      >
-        Delete
-      </button>
-      <button
         className="text-blue-600 underline"
         onClick={() => {
           setEditingStaff(params.data);
@@ -91,6 +85,12 @@ export default function StaffPage() {
         }}
       >
         Edit
+      </button>
+      <button
+        className="text-red-500 underline"
+        onClick={() => handleDelete(params.data.id)}
+      >
+        Delete
       </button>
     </div>
   );
@@ -103,18 +103,17 @@ export default function StaffPage() {
   const columnDefs: ColDef<Staff>[] = [
     {
       headerName: 'Name',
-      field: 'name',
-      valueGetter: (params) =>
-        `${params.data.firstName} ${params.data.lastName}`,
+      valueGetter: (params) => {
+        const data = params.data;
+        return data ? `${data.firstName} ${data.lastName}` : '';
+      },
       sortable: true,
-      filter: true,
     },
-    { headerName: 'Email', field: 'email', sortable: true, filter: true },
-    { headerName: 'Position', field: 'position', sortable: true, filter: true },
-    { headerName: 'Phone', field: 'phoneNumber', sortable: true, filter: true },
+    { headerName: 'Email', field: 'email', sortable: true },
+    { headerName: 'Position', field: 'position', sortable: true },
+    { headerName: 'Phone', field: 'phoneNumber', sortable: true },
     {
       headerName: 'Actions',
-      field: 'actions',
       cellRenderer: actionCellRenderer,
       sortable: false,
       filter: false,
@@ -174,7 +173,6 @@ export default function StaffPage() {
                 rowData={staff}
                 columnDefs={columnDefs}
                 rowModelType="clientSide"
-                pagination={true}
               />
             </div>
           )}

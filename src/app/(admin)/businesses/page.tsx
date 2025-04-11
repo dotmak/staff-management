@@ -4,7 +4,7 @@ import axios from 'axios';
 import { AgGridReact } from 'ag-grid-react';
 import { Business } from '../../types/business';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import BusinessForm from '../../components/BusinessForm';
+import BusinessForm from '@/app/components/BusinessForm';
 import { useEffect, useState, useCallback } from 'react';
 import {
   ModuleRegistry,
